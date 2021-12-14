@@ -15,14 +15,16 @@ class Game {
         this.board = board;
         this.currentPlayer = 'o';
         this.numberOfMoves = 0;
+        this.gameOver = false;
     }
 
 
     //takes in a column and returns the updated board 
     playTurn(column){
+        if(this.gameOver) return "Game is over. " + this.currentPlayer + " wins"
         // if the last space in the column is empty
             // just mark the last one
-        if(!this.board[5][column] && this.validateMove()){
+        if(!this.board[5][column] && this.validateMove(column)){
             this.board[5][column] = this.currentPlayer
         } else {
             // iterate through the rows and find the first space that is taken
@@ -31,16 +33,17 @@ class Game {
                 if(!!this.board[0][column]){
                     console.log("cannot move here")
                     break
-                } else if (this.board[i + 1][column] && this.validateMove()){
+                } else if (this.board[i + 1][column] && this.validateMove(column)){
                     this.board[i][column] = this.currentPlayer
                     break
                 }
             }
         }
 
-                //only check for win after 8 moves
-        if(this.numberOfMoves >= 8){
+         //only check for win after 8 moves
+        if(this.numberOfMoves >= 6){
             console.log(this.checkWin())
+            if (this.gameOver) return
         }
 
 //         //Set currentPlayer
@@ -51,11 +54,11 @@ class Game {
         return this.board
     }
 
-    /* WILL LIKELY NOT NEED THIS IN THE REACT APP CAUSE USERS CAN ONLY
+    /* WILL NOT NEED THIS IN THE REACT APP CAUSE USERS CAN ONLY
         PICK A HIGHLIGHTED COLUMN TO DROP A PIECE.
     */
     validateMove(column){
-        if(column < 0 || column > 6){
+        if(column < 0 || column > 7){
             throw new Error("Cannot move there. Please try again")
             return false
         } else {
@@ -64,54 +67,83 @@ class Game {
     }
 
     checkHorizontalWin(){
-//         debugger
-        console.log("turn" + this.numberOfMoves)
         for(let r = 5; r > 0; r--){
             for(let c = 0; c < 4; c++){
-//             console.log(
-//                 `this is row: ${r} at pos: 0`, this.board[r][c],
-//                 `this is row: ${r} at pos: 1`,this.board[r][c + 1],
-//                 `this is row: ${r} at pos: 2`, this.board[r][c + 2],
-//                 `this is row: ${r} at pos: 3`,this.board[r][c + 3]
-//                 )
-debugger
                 if (
                     this.currentPlayer === this.board[r][c] &&
                     this.currentPlayer === this.board[r][c + 1] &&
                     this.currentPlayer === this.board[r][c + 2] &&
                     this.currentPlayer === this.board[r][c + 3]
                 ) {
-                    return `Player ${this.currentPlayer} wins!`
+                    this.gameOver = true;
+                    return `Player ${this.currentPlayer} wins! Horizontal win`
                 }
             }
 
         }
     }
 
-    checkWin(column, row){
-        return this.checkHorizontalWin(column, row)
+    checkVerticalWin(){
+        for(let r = 0; r < 4; r++){
+            for(let c = 0; c < 6; c++){
+                console.log(
+                    this.board[r][c],
+                    this.board[r+1][c],
+                    this.board[r+2][c],
+                    this.board[r+3][c]
+                )
+                if (
+                    this.currentPlayer === this.board[r][c] &&
+                    this.currentPlayer === this.board[r + 1][c] &&
+                    this.currentPlayer === this.board[r + 2][c] &&
+                    this.currentPlayer === this.board[r + 3][c]
+                ) {
+                    this.gameOver = true;
+                    return `Player ${this.currentPlayer} wins! Vertical win`
+                }
+            }
+
+        }
+
+//         debugger
+    }
+
+    checkWin(){
+        return this.checkHorizontalWin() || this.checkVerticalWin()
     }
 
 }
 const g = new Game(board)
 
-g.playTurn(0) //o
+// horizontal win
+// g.playTurn(0) //o
+// g.playTurn(6)
+// g.playTurn(1) //o
+// g.playTurn(5)
+// g.playTurn(2) //o
+// g.playTurn(4)
+// g.playTurn(3) //o
+//===============
+// g.playTurn(0)
+// g.playTurn(0) //o
+// g.playTurn(0)
+// g.playTurn(0) //o
+// g.playTurn(0)
+// g.playTurn(0) // should be o
+// g.playTurn(0)
+// g.playTurn(1)//o
+// g.playTurn(1)
+// g.playTurn(1)//o
+
+
+//vertical win 
+g.playTurn(5) //o
 g.playTurn(6)
-g.playTurn(1) //o
-g.playTurn(5)
-g.playTurn(2) //o
-g.playTurn(4)
-g.playTurn(3) //o
-g.playTurn(0)
-g.playTurn(0) //o
-g.playTurn(0)
-g.playTurn(0) //o
-g.playTurn(0)
-g.playTurn(0) // should be o
-g.playTurn(0)
-g.playTurn(1)//o
-g.playTurn(1)
-g.playTurn(1)//o
+g.playTurn(5) //o
+g.playTurn(6)
+g.playTurn(5) //o
+g.playTurn(6)
+// g.playTurn(5) //o
 
 
 
